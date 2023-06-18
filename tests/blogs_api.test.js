@@ -91,6 +91,52 @@ test('expect status 400 when no title/url', async () => {
 
 })
 
+describe('deletion of a node', () => {
+    test('succeeds with status code 204 if id is valid', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const blogToDelete = blogsAtStart[0]
+
+        await api
+            .delete(`/api/blogs/${blogToDelete.id}`)
+            .expect(204)
+        
+        const blogsAtEnd = await helper.blogsInDb()
+
+        expect(blogsAtEnd).toHaveLength(
+            helper.initialBlogs.length - 1
+        )
+
+        const titles = blogsAtEnd.map(r => r.title)
+
+        expect(titles).not.toContain(blogToDelete.title)
+    })
+}, 100000) //this our timeout which we're setting longer bc this test takes too long
+
+describe('updating a node', () => {
+    test('succeeds and responds with updated note', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const blogToUpdate = blogsAtStart[0]
+
+        const newBlog = {
+            title: blogToUpdate.title,
+            author: blogToUpdate.author,
+            url: blogToUpdate.url,
+            likes: 22000,
+        }
+
+        await api
+            .put(`/api/blogs/${blogToUpdate.id}`)
+            .send(newBlog)
+
+        const blogsAtEnd = await helper.blogsInDb()
+
+        const likes = blogsAtEnd.map(r => r.likes)
+        expect(likes).toContain(
+            22000
+        )
+    })
+})
+
 afterAll(async () => {
     await mongoose.connection.close()
   })
