@@ -113,7 +113,7 @@ describe('deletion of a node', () => {
 }, 100000) //this our timeout which we're setting longer bc this test takes too long
 
 describe('updating a node', () => {
-    test('succeeds and responds with updated note', async () => {
+    test('succeeds and responds with updated blog', async () => {
         const blogsAtStart = await helper.blogsInDb()
         const blogToUpdate = blogsAtStart[0]
 
